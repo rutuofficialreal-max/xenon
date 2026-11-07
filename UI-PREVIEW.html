@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xenon — UI preview</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 28px 18px 48px;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #0a0c10; color: #e7ecf3;
+    display: flex; flex-direction: column; align-items: center; gap: 26px;
+  }
+  h1 { font-size: 20px; font-weight: 700; letter-spacing: .5px; margin: 0; }
+  .sub { color: #8d99a8; font-size: 13px; margin: -14px 0 0; text-align: center; max-width: 640px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 26px; justify-content: center; align-items: flex-start; }
+  .frame {
+    width: 300px; height: 620px; border-radius: 34px; overflow: hidden;
+    border: 8px solid #1a1f27; background: #fff; position: relative;
+    box-shadow: 0 22px 46px rgba(0,0,0,.55); flex: 0 0 auto;
+  }
+  .frame.dark { background: #0b0f14; }
+  .caption { text-align: center; color: #8d99a8; font-size: 12px; margin-top: 10px; letter-spacing: .3px; }
+  .stack { display: flex; flex-direction: column; align-items: center; }
+
+  /* ===== app chrome (mirrors activity_main.xml) ===== */
+  .app { height: 100%; display: flex; flex-direction: column;
+         background: #fff; color: #101318; --surface:#fff; --var:#f1f3f7; --onvar:#5a6270;
+         --outline:#d5dae3; --primary:#0b5fff; --acc2:#00a5c4; --err:#b3261e; }
+  .dark .app { background:#0b0f14; color:#e6eaf0; --surface:#0b0f14; --var:#151a21; --onvar:#9aa4b2;
+               --outline:#222a35; --primary:#7fb0ff; --acc2:#4fd3e8; --err:#ffb4ab; }
+  .statusbar { height: 26px; display:flex; align-items:center; justify-content:space-between;
+               padding: 0 14px; font-size: 10.5px; color: var(--onvar); }
+  .topbar { display:flex; align-items:center; gap:2px; padding: 6px 4px; }
+  .iconbtn { width:34px; height:34px; display:grid; place-items:center; border-radius:50%; color:var(--onvar); flex:0 0 auto; }
+  .iconbtn svg { width:19px; height:19px; }
+  .addr { flex:1; height:34px; border-radius:18px; background:var(--var); border:1px solid var(--outline);
+          display:flex; align-items:center; padding:0 13px; font-size:12.5px; color:var(--onvar);
+          overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .addr.filled { color: inherit; font-size:11.5px; }
+  .progress { height:2px; background:transparent; }
+  .progress > div { height:2px; width:62%; background:var(--primary); }
+  .viewport { flex:1; position:relative; overflow:hidden; background:#fff; }
+  .dark .viewport { background:#0b0f14; }
+
+  /* start page */
+  .home { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;
+          gap:14px; padding: 22px 18px; background: inherit; }
+  .logo { width:62px; height:62px; }
+  .wordmark { font-size:22px; font-weight:700; letter-spacing:3px; text-transform:uppercase; }
+  .tagline { font-size:10.5px; color: var(--onvar); margin-top:-8px; text-align:center; }
+  .searchrow { display:flex; gap:6px; width:100%; margin-top:6px; }
+  .search { flex:1; height:38px; border-radius:19px; background:var(--var); border:1px solid var(--outline);
+            display:flex; align-items:center; padding:0 13px; font-size:11.5px; color:var(--onvar); }
+  .gobtn { height:38px; padding:0 15px; border-radius:19px; font-size:11.5px; font-weight:600; color:#fff;
+           background:linear-gradient(135deg,var(--primary),var(--acc2)); display:grid; place-items:center; }
+  .chips { display:grid; grid-template-columns:1fr 1fr; gap:7px; width:100%; }
+  .chip { height:34px; border-radius:12px; background:var(--var); border:1px solid var(--outline);
+          display:grid; place-items:center; font-size:10.5px; }
+  .foot { font-size:9px; color:var(--onvar); text-align:center; line-height:1.6; margin-top:2px; }
+
+  /* fake article page */
+  .page { padding: 14px; }
+  .hero { height:86px; border-radius:12px; background:linear-gradient(135deg,#0b5fff22,#00a5c455);
+          border:1px solid var(--outline); margin-bottom:12px; display:grid; place-items:center;
+          font-size:10px; color:var(--onvar); letter-spacing:1px; }
+  .line { height:9px; border-radius:5px; background:var(--var); margin-bottom:8px; }
+  .line.w70 { width:70%; } .line.w90 { width:90%; } .line.w50 { width:50%; }
+  .h2 { font-size:14px; font-weight:700; margin: 4px 0 10px; }
+  .avatar { width:22px; height:22px; border-radius:50%; background:var(--outline); display:inline-block;
+            vertical-align:middle; margin-right:6px; }
+  .metaline { display:flex; align-items:center; font-size:10px; color:var(--onvar); margin-bottom:12px; }
+
+  /* error state */
+  .error { position:absolute; inset:0; background:var(--surface); display:flex; flex-direction:column;
+           align-items:center; justify-content:center; gap:10px; padding:28px; text-align:center; }
+  .error svg { width:44px; height:44px; color:var(--onvar); }
+  .errtitle { font-size:15px; font-weight:600; }
+  .errmsg { font-size:11px; color:var(--onvar); line-height:1.55; }
+  .retry { margin-top:8px; height:34px; padding:0 20px; border-radius:17px; background:var(--primary);
+           color:#04101f; font-size:11.5px; font-weight:600; display:grid; place-items:center; }
+
+  /* settings */
+  .toolbar { display:flex; align-items:center; gap:6px; padding:10px 10px 6px; }
+  .toolbar .t { font-size:14px; font-weight:600; }
+  .sect { padding: 4px 16px 0; }
+  .stitle { font-size:11.5px; font-weight:700; }
+  .sdesc { font-size:9.5px; color:var(--onvar); margin-top:2px; line-height:1.5; }
+  .radio { display:flex; align-items:center; gap:8px; font-size:11px; padding:5px 0; }
+  .dot { width:13px; height:13px; border-radius:50%; border:1.5px solid var(--onvar); flex:0 0 auto; }
+  .dot.on { border-color:var(--primary); position:relative; }
+  .dot.on::after { content:""; position:absolute; inset:2.5px; border-radius:50%; background:var(--primary); }
+  .field { height:36px; border-radius:9px; border:1px solid var(--outline); display:flex; align-items:center;
+           padding:0 10px; font-size:10.5px; color:var(--onvar); margin-top:7px; }
+  .divider { height:1px; background:var(--outline); margin:12px 16px; }
+  .swrow { display:flex; align-items:center; justify-content:space-between; padding: 6px 16px 0; font-size:11px; }
+  .switch { width:32px; height:18px; border-radius:9px; background:var(--outline); position:relative; flex:0 0 auto; }
+  .switch.on { background: var(--primary); }
+  .switch::after { content:""; position:absolute; top:2.5px; left:2.5px; width:13px; height:13px; border-radius:50%; background:#fff; }
+  .switch.on::after { left:auto; right:2.5px; }
+  .btn { margin: 12px 16px 0; height:34px; border-radius:11px; border:1px solid var(--outline);
+         display:grid; place-items:center; font-size:11px; }
+  .btn.plain { border:0; color:var(--primary); font-weight:600; }
+</style>
+</head>
+<body>
+
+<h1>Xenon · UI preview</h1>
+<p class="sub">Rendered from the committed layouts (<code>activity_main.xml</code>, <code>activity_settings.xml</code>,
+<code>assets/home.html</code>) with the real colour tokens. Light and dark follow the system theme exactly as the app does.</p>
+
+<div class="grid">
+
+  <!-- ================= 1. start page, light ================= -->
+  <div class="stack">
+    <div class="frame">
+      <div class="app">
+        <div class="statusbar"><span>9:41</span><span>▮▮▮ ⌁ 82%</span></div>
+        <div class="topbar">
+          <div class="iconbtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z"/></svg></div>
+          <div class="addr">Search or enter address</div>
+          <div class="iconbtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.65,6.35C16.2,4.9 14.21,4 12,4c-4.42,0 -7.99,3.58 -8,8s3.57,8 8,8c3.73,0 6.84,-2.55 7.73,-6h-2.08c-0.82,2.33 -3.04,4 -5.65,4 -3.31,0 -6,-2.69 -6,-6s2.69,-6 6,-6c1.66,0 3.14,0.69 4.22,1.78L13,11h7V4l-2.35,2.35z"/></svg></div>
+          <div class="iconbtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3,17v2h6v-2H3zM3,5v2h10V5H3zM13,21v-2h8v-2h-8v-2h-2v6h2zM7,9v2H3v2h4v2h2V9H7zM21,13v-2H11v2h10zM15,9h2V7h4V5h-4V3h-2v6z"/></svg></div>
+        </div>
+        <div class="progress"><div style="width:0"></div></div>
+        <div class="viewport">
+          <div class="home">
+            <svg class="logo" viewBox="0 0 108 108" fill="none">
+              <circle cx="54" cy="54" r="28" stroke="#00a5c4" stroke-width="4"/>
+              <path d="M42 42 L66 66" stroke="#101318" stroke-width="7" stroke-linecap="round"/>
+              <path d="M66 42 L42 66" stroke="#00a5c4" stroke-width="7" stroke-linecap="round"/>
+            </svg>
+            <div class="wordmark">Xenon</div>
+            <div class="tagline">Searching with Google · fast, private, yours.</div>
+            <div class="searchrow">
+              <div class="search">Search the web</div>
+              <div class="gobtn">Search</div>
+            </div>
+            <div class="chips">
+              <div class="chip">Wikipedia</div><div class="chip">GitHub</div>
+              <div class="chip">Hacker News</div><div class="chip">YouTube</div>
+              <div class="chip">Reddit</div><div class="chip">BBC News</div>
+            </div>
+            <div class="foot">Xenon 1.0.0 · WebView engine<br>No accounts, no telemetry, no tracking.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">Start page · light</div>
+  </div>
+
+  <!-- ================= 2. browsing, dark ================= -->
+  <div class="stack">
+    <div class="frame dark">
+      <div class="app">
+        <div class="statusbar"><span>9:41</span><span>▮▮▮ ⌁ 79%</span></div>
+        <div class="topbar">
+          <div class="iconbtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z"/></svg></div>
+          <div class="addr filled">https://en.wikipedia.org/wiki/WebView</div>
+          <div class="iconbtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18,18H6V6h12v12z"/></svg></div>
+          <div class="iconbtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3,17v2h6v-2H3zM3,5v2h10V5H3zM13,21v-2h8v-2h-8v-2h-2v6h2zM7,9v2H3v2h4v2h2V9H7zM21,13v-2H11v2h10zM15,9h2V7h4V5h-4V3h-2v6z"/></svg></div>
+        </div>
+        <div class="progress"><div></div></div>
+        <div class="viewport">
+          <div class="page">
+            <div class="hero">PAGE CONTENT</div>
+            <div class="h2">WebView</div>
+            <div class="metaline"><span class="avatar"></span>Wikipedia · last edited 3 hours ago</div>
+            <div class="line"></div><div class="line"></div>
+            <div class="line w90"></div><div class="line w70"></div>
+            <div class="line" style="height:1px;background:var(--outline);margin:14px 0"></div>
+            <div class="line"></div><div class="line w50"></div>
+            <div class="line"></div><div class="line w90"></div><div class="line w70"></div>
+            <div class="line" style="margin-top:14px"></div><div class="line w50"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">Loading — stop button + progress line · dark</div>
+  </div>
+
+  <!-- ================= 3. error state, dark ================= -->
+  <div class="stack">
+    <div class="frame dark">
+      <div class="app">
+        <div class="statusbar"><span>9:41</span><span>▮▮▮ ⌁ 64%</span></div>
+        <div class="topbar">
+          <div class="iconbtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z"/></svg></div>
+          <div class="addr filled">https://intranet.example/dev</div>
+          <div class="iconbtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.65,6.35C16.2,4.9 14.21,4 12,4c-4.42,0 -7.99,3.58 -8,8s3.57,8 8,8c3.73,0 6.84,-2.55 7.73,-6h-2.08c-0.82,2.33 -3.04,4 -5.65,4 -3.31,0 -6,-2.69 -6,-6s2.69,-6 6,-6c1.66,0 3.14,0.69 4.22,1.78L13,11h7V4l-2.35,2.35z"/></svg></div>
+          <div class="iconbtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3,17v2h6v-2H3zM3,5v2h10V5H3zM13,21v-2h8v-2h-8v-2h-2v6h2zM7,9v2H3v2h4v2h2V9H7zM21,13v-2H11v2h10zM15,9h2V7h4V5h-4V3h-2v6z"/></svg></div>
+        </div>
+        <div class="progress"><div style="width:0"></div></div>
+        <div class="viewport">
+          <div class="error">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.35,10.04C18.67,6.59 15.64,4 12,4c-1.48,0 -2.85,0.43 -4.01,1.17l1.46,1.46C10.21,6.23 11.08,6 12,6c3.04,0 5.5,2.46 5.5,5.5v0.5H19c1.66,0 3,1.34 3,3 0,1.13 -0.64,2.11 -1.56,2.62l1.45,1.45C23.16,18.16 24,16.68 24,15c0,-2.64 -2.05,-4.78 -4.65,-4.96zM3,5.27l2.75,2.74C2.56,8.15 0,10.77 0,14c0,3.31 2.69,6 6,6h11.73l2,2L21,20.73 4.27,4 3,5.27zM7.73,10l8,8H6c-2.21,0 -4,-1.79 -4,-4s1.79,-4 4,-4h1.73z"/></svg>
+            <div class="errtitle">Server not found</div>
+            <div class="errmsg">Xenon couldn't find the server for that address.<br>Double-check the spelling.</div>
+            <div class="retry">Retry</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">Inline error state (SSL errors get their own hard stop)</div>
+  </div>
+
+  <!-- ================= 4. settings, light ================= -->
+  <div class="stack">
+    <div class="frame">
+      <div class="app">
+        <div class="statusbar"><span>9:41</span><span>▮▮▮ ⌁ 82%</span></div>
+        <div class="toolbar">
+          <div class="iconbtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z"/></svg></div>
+          <div class="t">Settings</div>
+        </div>
+        <div style="flex:1; overflow:hidden;">
+          <div class="sect">
+            <div class="stitle">Search engine</div>
+            <div class="sdesc">Used when you type words instead of an address.</div>
+            <div style="margin-top:6px">
+              <div class="radio"><span class="dot on"></span>Google</div>
+              <div class="radio"><span class="dot"></span>DuckDuckGo</div>
+              <div class="radio"><span class="dot"></span>Brave Search</div>
+              <div class="radio"><span class="dot"></span>Startpage</div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="sect">
+            <div class="stitle">Homepage</div>
+            <div class="sdesc">Leave blank to use the built-in Xenon start page.</div>
+            <div class="field">xenon://home</div>
+          </div>
+          <div class="divider"></div>
+          <div class="sect"><div class="stitle">Privacy &amp; performance</div></div>
+          <div class="swrow"><span>Enable JavaScript</span><span class="switch on"></span></div>
+          <div class="swrow"><span>Request desktop site</span><span class="switch"></span></div>
+          <div class="divider"></div>
+          <div class="sect"><div class="stitle">Data</div>
+            <div class="sdesc">Cookies, site storage, cache and form history are removed. Downloads are kept.</div>
+          </div>
+          <div class="btn">Clear browsing data</div>
+          <div class="btn plain">Reset all settings</div>
+          <div style="text-align:center;font-size:8.5px;color:var(--onvar);margin-top:18px;">Xenon 1.0.0 — a fast, private WebView browser.</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">Settings · light</div>
+  </div>
+
+</div>
+
+<p class="sub" style="margin-top:6px">Debug APK in this workspace: <b>Xenon-1.0.0-debug.apk</b> · source in <b>xenon/</b> · CI in <b>.github/workflows/android.yml</b></p>
+
+</body>
+</html>
