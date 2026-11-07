@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Xenon</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #101318;
+    --muted: #5a6270;
+    --card: #f1f3f7;
+    --stroke: #d5dae3;
+    --accent: #0b5fff;
+    --accent-2: #00a5c4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b0f14;
+      --fg: #e6eaf0;
+      --muted: #9aa4b2;
+      --card: #151a21;
+      --stroke: #222a35;
+      --accent: #7fb0ff;
+      --accent-2: #4fd3e8;
+    }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, "Roboto", "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 22px calc(32px + env(safe-area-inset-bottom));
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+  }
+  .logo {
+    width: 76px;
+    height: 76px;
+  }
+  .name {
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .tagline {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 0.2px;
+  }
+  form {
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 26px;
+  }
+  input[type="search"] {
+    flex: 1;
+    min-width: 0;
+    height: 52px;
+    padding: 0 18px;
+    font-size: 16px;
+    color: var(--fg);
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    border-radius: 26px;
+    outline: none;
+    appearance: none;
+  }
+  input[type="search"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  input[type="search"]::placeholder { color: var(--muted); }
+  button {
+    height: 52px;
+    padding: 0 22px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border: 0;
+    border-radius: 26px;
+    cursor: pointer;
+  }
+  button:active { transform: scale(0.97); }
+  .shortcuts {
+    width: 100%;
+    max-width: 560px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    gap: 10px;
+  }
+  .shortcuts a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    padding: 0 10px;
+    font-size: 13.5px;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--fg);
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    border-radius: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .shortcuts a:active { background: var(--stroke); }
+  .footer {
+    margin-top: 34px;
+    color: var(--muted);
+    font-size: 11.5px;
+    text-align: center;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="54" cy="54" r="28" stroke="var(--accent-2)" stroke-width="4"/>
+      <path d="M42 42 L66 66" stroke="var(--fg)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M66 42 L42 66" stroke="var(--accent-2)" stroke-width="7" stroke-linecap="round"/>
+    </svg>
+    <div class="name">Xenon</div>
+    <div class="tagline" id="tagline">Fast, private, yours.</div>
+  </div>
+
+  <form id="searchForm" autocomplete="off">
+    <input id="q" type="search" placeholder="Search the web" inputmode="search"
+           enterkeyhint="go" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button type="submit">Search</button>
+  </form>
+
+  <nav class="shortcuts">
+    <a href="https://en.wikipedia.org">Wikipedia</a>
+    <a href="https://github.com">GitHub</a>
+    <a href="https://news.ycombinator.com">Hacker News</a>
+    <a href="https://www.youtube.com">YouTube</a>
+    <a href="https://www.reddit.com">Reddit</a>
+    <a href="https://www.bbc.com/news">BBC News</a>
+  </nav>
+
+  <div class="footer">
+    Xenon 1.0.0 &middot; WebView engine<br>
+    No accounts, no telemetry, no tracking.
+  </div>
+
+<script>
+  (function () {
+    var ENGINES = {
+      google: {
+        label: "Google",
+        url: "https://www.google.com/search?q="
+      },
+      duckduckgo: {
+        label: "DuckDuckGo",
+        url: "https://duckduckgo.com/?q="
+      },
+      brave: {
+        label: "Brave Search",
+        url: "https://search.brave.com/search?q="
+      },
+      startpage: {
+        label: "Startpage",
+        url: "https://www.startpage.com/sp/search?query="
+      }
+    };
+
+    var params = new URLSearchParams(window.location.search);
+    var key = (params.get("engine") || "google").toLowerCase();
+    var engine = ENGINES[key] || ENGINES.google;
+
+    document.getElementById("tagline").textContent =
+      "Searching with " + engine.label + " \u00b7 fast, private, yours.";
+
+    var input = document.getElementById("q");
+    document.getElementById("searchForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      var query = input.value.trim();
+      if (!query) {
+        input.focus();
+        return;
+      }
+      window.location.href = engine.url + encodeURIComponent(query);
+    });
+
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("searchForm").dispatchEvent(
+          new Event("submit", { cancelable: true })
+        );
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

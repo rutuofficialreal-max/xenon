@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 12+ replacement for backup_rules.xml. Same policy: WebView cookies
+    and site storage are excluded from both cloud backup and device transfer.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="database" path="webview.db" />
+        <exclude domain="database" path="webviewCookiesChromium.db" />
+        <exclude domain="database" path="webviewCookiesChromiumNoise.db" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="database" path="webview.db" />
+        <exclude domain="database" path="webviewCookiesChromium.db" />
+        <exclude domain="database" path="webviewCookiesChromiumNoise.db" />
+    </device-transfer>
+</data-extraction-rules>

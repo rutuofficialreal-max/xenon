@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Xenon dark palette -->
+    <color name="xenon_primary">#7FB0FF</color>
+    <color name="xenon_on_primary">#00214D</color>
+    <color name="xenon_primary_container">#16233A</color>
+    <color name="xenon_secondary">#4FD3E8</color>
+    <color name="xenon_surface">#0B0F14</color>
+    <color name="xenon_surface_variant">#151A21</color>
+    <color name="xenon_on_surface">#E6EAF0</color>
+    <color name="xenon_on_surface_variant">#9AA4B2</color>
+    <color name="xenon_outline">#222A35</color>
+    <color name="xenon_error">#FFB4AB</color>
+    <color name="xenon_address_bar">#151A21</color>
+    <color name="xenon_webview_bg">#0B0F14</color>
+    <color name="xenon_icon_bg">#0B0F14</color>
+</resources>

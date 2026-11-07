@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Auto Backup: everything is eligible by default, except the WebView's own
+    databases. Those hold cookies, session tokens and site storage — they are
+    device-bound and must never leave the phone via a cloud backup.
+-->
+<full-backup-content>
+    <exclude domain="database" path="webview.db" />
+    <exclude domain="database" path="webviewCookiesChromium.db" />
+    <exclude domain="database" path="webviewCookiesChromiumNoise.db" />
+</full-backup-content>

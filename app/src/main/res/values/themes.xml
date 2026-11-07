@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.Xenon" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/xenon_primary</item>
+        <item name="colorOnPrimary">@color/xenon_on_primary</item>
+        <item name="colorPrimaryContainer">@color/xenon_primary_container</item>
+        <item name="colorSecondary">@color/xenon_secondary</item>
+        <item name="colorSurface">@color/xenon_surface</item>
+        <item name="colorSurfaceVariant">@color/xenon_surface_variant</item>
+        <item name="colorOnSurface">@color/xenon_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/xenon_on_surface_variant</item>
+        <item name="colorOutline">@color/xenon_outline</item>
+        <item name="colorError">@color/xenon_error</item>
+
+        <item name="android:colorBackground">@color/xenon_surface</item>
+        <item name="android:windowBackground">@color/xenon_surface</item>
+        <item name="android:statusBarColor">@color/xenon_surface</item>
+        <item name="android:navigationBarColor">@color/xenon_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
+    </style>
+
+    <!-- Transparent, no-action-bar theme wrapper for dialogs is not needed;
+         Settings shares Theme.Xenon so light/dark switching stays automatic. -->
+
+</resources>
